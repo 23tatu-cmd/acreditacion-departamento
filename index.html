@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Acreditación SEA-CU - Dpto. Construcciones</title>
+    <style>
+        :root {
+            --primary-blue: #1A365D;
+            --secondary-orange: #D96C38;
+            --light-grey: #F3F4F6;
+            --text-dark: #333333;
+            --success-green: #28a745;
+            --border-color: #E5E7EB;
+            --bg-card: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-grey);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header y Logo */
+        header {
+            background-color: var(--bg-card);
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 4px solid var(--secondary-orange);
+        }
+
+        .logo-container img {
+            max-height: 90px;
+            width: auto;
+            border-radius: 5px;
+        }
+
+        .header-text h1 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            color: var(--secondary-orange);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Barra de Progreso General */
+        .global-progress-container {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .progress-bar-bg {
+            flex-grow: 1;
+            background-color: rgba(255,255,255,0.2);
+            height: 22px;
+            border-radius: 11px;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success-green);
+            width: 0%;
+            transition: width 0.4s ease;
+            text-align: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
+            line-height: 22px;
+        }
+
+        /* Contenedor Principal */
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        /* Navegación de Pestañas */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            background-color: #E5E7EB;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tab:hover {
+            background-color: #D1D5DB;
+        }
+
+        .tab.active {
+            background-color: var(--bg-card);
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--secondary-orange);
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tarjetas */
+        .card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card h3 .badge {
+            font-size: 0.8rem;
+            background: var(--secondary-orange);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* Elementos Editables */
+        [contenteditable="true"] {
+            border-bottom: 1px dashed var(--secondary-orange);
+            padding: 2px 5px;
+            background-color: #FFF9F5;
+            cursor: text;
+            display: inline-block;
+            min-width: 150px;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        [contenteditable="true"]:hover {
+            background-color: #FFEEDD;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: none;
+            background-color: #FFEEDD;
+            border-bottom: 2px solid var(--secondary-orange);
+            box-shadow: 0 0 5px rgba(217, 108, 56, 0.3);
+        }
+
+        /* Barra de progreso por comisión */
+        .commission-progress {
+            background: #F8FAFC;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary-orange);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .commission-progress .progress-bar-bg {
+            background-color: #E2E8F0;
+            height: 15px;
+        }
+        
+        .commission-progress .progress-bar-fill {
+            background-color: var(--secondary-orange);
+            line-height: 15px;
+            font-size: 0.75rem;
+        }
+
+        /* Listas de Tareas */
+        .task-list {
+            list-style: none;
+        }
+
+        .task-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .task-check:hover {
+            background-color: #F9FAFB;
+        }
+
+        .task-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--success-green);
+            flex-shrink: 0;
+        }
+
+        .task-check label {
+            cursor: pointer;
+            flex-grow: 1;
+            word-break: break-word;
+        }
+
+        .task-check input:checked + label {
+            text-decoration: line-through;
+            color: #9CA3AF;
+        }
+
+        /* Botón de eliminar tarea */
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 10px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        /* Contenedor para añadir tareas */
+        .add-task-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            border: 1px dashed #CBD5E1;
+        }
+
+        .add-task-container input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .add-task-container input:focus {
+            border-color: var(--secondary-orange);
+        }
+
+        .add-task-container button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .add-task-container button:hover {
+            background-color: var(--secondary-orange);
+        }
+
+        /* Tablas Cronograma */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #F9FAFB;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--primary-blue);
+            color: white;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .global-progress-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .progress-bar-bg {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <!-- REEMPLAZA "logo.png" POR EL NOMBRE DE TU ARCHIVO DE IMAGEN -->
+            <img src="logo.png" alt="Logo Departamento" onerror="this.style.display='none'">
+        </div>
+        <div class="header-text">
+            <h1>Control de Preparación SEA-CU</h1>
+            <p>Departamento de Construcciones - Universidad de Matanzas</p>
+            <p style="font-size: 0.85rem; color: #666; font-weight: normal;">Proceso de evaluación externa previsto: Noviembre 2027</p>
+        </div>
+    </header>
+
+    <!-- Barra de Progreso General -->
+    <div class="global-progress-container">
+        <div style="min-width: 150px;">
+            <strong>Progreso General</strong>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="global-progress-fill">0%</div>
+        </div>
+        <div id="global-progress-text" style="font-size: 0.9rem;">0 de 0 tareas</div>
+    </div>
+
+    <main>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(event, 'info')">🏠 Inicio</div>
+            <div class="tab" onclick="switchTab(event, 'c1')">C1: Pertinencia</div>
+            <div class="tab" onclick="switchTab(event, 'c2')">C2: Claustro</div>
+            <div class="tab" onclick="switchTab(event, 'c3')">C3: Estudiantes</div>
+            <div class="tab" onclick="switchTab(event, 'c4')">C4: Infraestructura</div>
+            <div class="tab" onclick="switchTab(event, 'c5')">C5: Currículo</div>
+            <div class="tab" onclick="switchTab(event, 'c6')">C6: Impacto</div>
+            <div class="tab" onclick="switchTab(event, 'cronograma')">Cronograma</div>
+            <div class="tab" onclick="switchTab(event, 'riesgos')">Riesgos</div>
+        </div>
+
+        <!-- Pestaña: Información General / Equipos -->
+        <div id="info" class="tab-content active">
+            <div class="card" style="border-top-color: var(--secondary-orange);">
+                <h3>Grupo de Dirección y Control</h3>
+                <p style="margin-bottom: 10px;"><strong>Dirección general:</strong> <span contenteditable="true" data-id="dir_general">Jefe del Departamento de Construcciones</span></p>
+                <p style="margin-bottom: 10px;"><strong>Coordinación ejecutiva:</strong> <span contenteditable="true" data-id="coord_ejec">Profesor con experiencia en SEA-CU</span></p>
+                <p><strong>Control interno y trazabilidad:</strong> <span contenteditable="true" data-id="control_int">Profesor con perfil de auditoría</span></p>
+            </div>
+            <div class="card">
+                <h3>Comisión de Síntesis y Redacción</h3>
+                <p><strong>Responsable:</strong> <span contenteditable="true" data-id="sintesis_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="sintesis_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            <p style="text-align: center; color: #666; font-style: italic;">Haga clic en los nombres subrayados para editarlos. Navegue por las pestañas superiores para gestionar cada comisión.</p>
+        </div>
+
+        <!-- Pestaña: Comisión 1 -->
+        <div id="c1" class="tab-content">
+            <div class="card">
+                <h3>Comisión 1: Pertinencia Integral <span class="badge">SEA-CU Dim. 1</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c1_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c1_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C1:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c1-progress-fill">0%</div></div>
+                <span id="c1-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c1">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t1"><label for="c1_t1">Diseñar y verificar la estrategia educativa y el trabajo político-ideológico por años y brigadas.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t2"><label for="c1_t2">Documentar la participación de estudiantes y profesores en al menos 2 proyectos comunitarios o extensionistas.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t3"><label for="c1_t3">Recopilar evidencias de participación en proyectos de investigación (PNAP, I+D+i) vinculados a sectores estratégicos (meta: >35%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t4"><label for="c1_t4">Actualizar los convenios y memorandos de entendimiento con entidades locales, provinciales y nacionales.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t5"><label for="c1_t5">Sistematizar el seguimiento a egresados (encuestas de satisfacción y ofertas de posgrado).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c1" id="c1_t6"><label for="c1_t6">Documentar el plan de ingreso, permanencia y eficiencia en el ciclo de la carrera.</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c1" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c1')">
+                    <button onclick="addTask('c1')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Comisión 2 -->
+        <div id="c2" class="tab-content">
+            <div class="card">
+                <h3>Comisión 2: Claustro y Personal de Apoyo <span class="badge">SEA-CU Dim. 2</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c2_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c2_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C2:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c2-progress-fill">0%</div></div>
+                <span id="c2-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c2">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t1"><label for="c2_t1">Actualizar la base de datos de RRHH: Pirámide científica (Dr.C., MSc, PT/PA). Meta: 30% Dr.C. y 45% PT/PA.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t2"><label for="c2_t2">Elaborar/Actualizar la estrategia de formación doctoral y evidenciar su seguimiento.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t3"><label for="c2_t3">Verificar la incorporación del claustro a proyectos de investigación (meta: >45%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t4"><label for="c2_t4">Recopilar evidencias de publicaciones indexadas (Grupos I al IV), índice de 3 por profesor en el quinquenio.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t5"><label for="c2_t5">Recopilar constancias de ponencias en eventos nacionales e internacionales y premios (ACC, CITMA, FORUM).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c2" id="c2_t6"><label for="c2_t6">Documentar la preparación y desempeño del personal de apoyo a la docencia.</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c2" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c2')">
+                    <button onclick="addTask('c2')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Comisión 3 -->
+        <div id="c3" class="tab-content">
+            <div class="card">
+                <h3>Comisión 3: Estudiantes <span class="badge">SEA-CU Dim. 3</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c3_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c3_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C3:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c3-progress-fill">0%</div></div>
+                <span id="c3-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c3">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t1"><label for="c3_t1">Aplicar encuestas de satisfacción estudiantil sobre la estrategia educativa y la evaluación integral.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t2"><label for="c3_t2">Documentar resultados académicos (promoción limpia, IAG, Títulos de Oro, PMC) desde Secretaría Docente.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t3"><label for="c3_t3">Recopilar evidencias de calidad de trabajos de curso y diploma (últimos 3 años).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t4"><label for="c3_t4">Preparar y documentar los exámenes integradores aplicados (meta: 80% aprobados, 65% con 4 o 5).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t5"><label for="c3_t5">Documentar el movimiento de alumnos ayudantes, exámenes de premio y participación en Jornadas Científicas.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c3" id="c3_t6"><label for="c3_t6">Evidenciar la vinculación de estudiantes a proyectos de investigación y sectores estratégicos (meta: >45%).</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c3" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c3')">
+                    <button onclick="addTask('c3')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Comisión 4 -->
+        <div id="c4" class="tab-content">
+            <div class="card">
+                <h3>Comisión 4: Infraestructura <span class="badge">SEA-CU Dim. 4</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c4_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c4_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C4:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c4-progress-fill">0%</div></div>
+                <span id="c4-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c4">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t1"><label for="c4_t1">Verificar el aseguramiento de bibliografía básica y complementaria actualizada (meta: 100%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t2"><label for="c4_t2">Auditar el estado de laboratorios, aulas especializadas y equipamiento tecnológico.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t3"><label for="c4_t3">Verificar el estado de las unidades docentes y entidades laborales de base (convenios y condiciones).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t4"><label for="c4_t4">Documentar el estado de las instalaciones (aulas, residencia, áreas deportivas) y mobiliario.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t5"><label for="c4_t5">Verificar el montaje de asignaturas en plataformas interactivas (Moodle, etc.) y el uso sistemático (meta: 85%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c4" id="c4_t6"><label for="c4_t6">Asegurar el acceso a WiFi, Intranet e Internet para estudiantes y profesores.</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c4" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c4')">
+                    <button onclick="addTask('c4')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Comisión 5 -->
+        <div id="c5" class="tab-content">
+            <div class="card">
+                <h3>Comisión 5: Currículo <span class="badge">SEA-CU Dim. 5</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c5_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c5_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C5:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c5-progress-fill">0%</div></div>
+                <span id="c5-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c5">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t1"><label for="c5_t1">Actualizar el libro del currículo y documentar ofertas de currículo propio, optativo y electivo (mínimo 3 por año).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t2"><label for="c5_t2">Recopilar actas y evidencias del trabajo metodológico (colectivos de año, disciplina y carrera).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t3"><label for="c5_t3">Documentar el funcionamiento de la Disciplina Principal Integradora (DPI).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t4"><label for="c5_t4">Evidenciar la vinculación de trabajos de diploma a sectores estratégicos o desarrollo local (meta: >40%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t5"><label for="c5_t5">Evaluar la implementación de estrategias curriculares (énfasis en idioma inglés y lengua materna).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c5" id="c5_t6"><label for="c5_t6">Verificar el cumplimiento de las tareas de la estrategia educativa en los proyectos de año.</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c5" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c5')">
+                    <button onclick="addTask('c5')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Comisión 6 -->
+        <div id="c6" class="tab-content">
+            <div class="card">
+                <h3>Comisión 6: Impacto Económico Social <span class="badge">SEA-CU Dim. 6</span></h3>
+                <p style="margin-bottom: 5px;"><strong>Jefe de Dimensión:</strong> <span contenteditable="true" data-id="c6_jefe">Escriba el nombre aquí</span></p>
+                <p><strong>Miembros:</strong> <span contenteditable="true" data-id="c6_miembros">Escriba los nombres aquí</span></p>
+            </div>
+            
+            <div class="commission-progress">
+                <strong style="font-size: 0.9rem;">Avance C6:</strong>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="c6-progress-fill">0%</div></div>
+                <span id="c6-progress-text" style="font-size: 0.85rem; min-width: 60px;">0/0</span>
+            </div>
+
+            <div class="card">
+                <h3>Tareas de la Dimensión</h3>
+                <ul class="task-list" id="list-c6">
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t1"><label for="c6_t1">Diseñar/Actualizar el sistema de evaluación de impacto de la carrera (interno y externo).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t2"><label for="c6_t2">Aplicar encuestas de satisfacción a empleadores (meta: 85%) y egresados (meta: 80%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t3"><label for="c6_t3">Recopilar avales de introducción de resultados de investigación en la formación o la universidad.</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t4"><label for="c6_t4">Documentar premios y reconocimientos (CITMA provincial, ACC, FORUM, etc.).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t5"><label for="c6_t5">Evidenciar publicaciones en revistas indexadas (Grupos I-IV) vinculadas a proyectos de investigación (meta: >20%).</label></li>
+                    <li class="task-check"><input type="checkbox" class="task" data-commission="c6" id="c6_t6"><label for="c6_t6">Documentar la participación en redes académicas y actividades interuniversitarias nacionales e internacionales.</label></li>
+                </ul>
+                <div class="add-task-container">
+                    <input type="text" id="input-c6" placeholder="Escriba una nueva tarea para esta comisión..." onkeypress="handleEnter(event, 'c6')">
+                    <button onclick="addTask('c6')">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Cronograma -->
+        <div id="cronograma" class="tab-content">
+            <div class="card" style="border-top-color: var(--secondary-orange);">
+                <h3>Cronograma de Trabajo (Fases)</h3>
+                <p style="margin-bottom: 15px;">Noviembre 2026 – Septiembre 2027, con sostenimiento hasta noviembre 2027.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Período</th>
+                            <th>Hito</th>
+                            <th>Responsable</th>
+                            <th>Producto verificable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Fase I -->
+                        <tr><td colspan="4" style="background: var(--light-grey); font-weight: bold; color: var(--primary-blue);">Fase I — Diagnóstico (Nov 2026 – Ene 2027)</td></tr>
+                        <tr><td>1–2 sem. nov. 2026</td><td>Constitución del Grupo de Dirección y designación de jefes de comisiones. Aprobación de la estrategia.</td><td>Jefe de Departamento</td><td>Acta de constitución y estrategia aprobada</td></tr>
+                        <tr><td>3–4 sem. nov. 2026</td><td>Taller de capacitación del claustro sobre SEA-CU y Resolución 36/2024.</td><td>Coordinación ejecutiva y Metodólogo de Calidad</td><td>Lista de asistencia y materiales</td></tr>
+                        <tr><td>dic. 2026</td><td>Diagnóstico preliminar por dimensión: matriz indicador / evidencia existente / faltante / responsable.</td><td>Jefes de comisión</td><td>Matriz de brechas por dimensión</td></tr>
+                        <tr><td>ene. 2027</td><td>Consolidación del diagnóstico y priorización de brechas críticas.</td><td>Dirección y coordinación</td><td>Informe de diagnóstico integrado</td></tr>
+                        
+                        <!-- Fase II -->
+                        <tr><td colspan="4" style="background: var(--light-grey); font-weight: bold; color: var(--primary-blue);">Fase II — Producción y organización de evidencias (Feb – Abr 2027)</td></tr>
+                        <tr><td>feb. 2027</td><td>Recopilación masiva de evidencias y registro en índice maestro con código, fecha y ubicación.</td><td>Comisiones 1–6</td><td>Índice maestro actualizado</td></tr>
+                        <tr><td>mar. 2027</td><td>Verificación interna cruzada y auditoría de una muestra de evidencias por dimensión.</td><td>Control interno y jefes de comisión</td><td>Informe de auditoría y plan de correcciones</td></tr>
+                        <tr><td>abr. 2027</td><td>Redacción de borradores por dimensión e inicio de integración.</td><td>Jefes de comisión y Comisión de Síntesis</td><td>Borradores de las seis dimensiones</td></tr>
+                        <tr><td>finales abr. 2027</td><td>Primera versión integrada del informe de autoevaluación y de los Modelos Resumen.</td><td>Comisión de Síntesis</td><td>Informe v1.0 y modelos completados</td></tr>
+                        
+                        <!-- Fase III -->
+                        <tr><td colspan="4" style="background: var(--light-grey); font-weight: bold; color: var(--primary-blue);">Fase III — Validación interna y ajuste (Mayo 2027)</td></tr>
+                        <tr><td>1–2 sem. may. 2027</td><td>Presentación del informe v1.0 al claustro ampliado y lectura crítica por profesores no involucrados en la redacción.</td><td>Dirección y Comisión de Síntesis</td><td>Acta de lectura crítica</td></tr>
+                        <tr><td>3 sem. may. 2027</td><td>Incorporación de observaciones y cierre estadístico de datos con fecha de corte definida.</td><td>Comisiones y Secretaría Docente</td><td>Informe v2.0 con datos cerrados</td></tr>
+                        <tr><td>4 sem. may. 2027</td><td>Aprobación final del informe y preparación del expediente de entrega.</td><td>Jefe de Departamento</td><td>Acta de aprobación y expediente listo</td></tr>
+
+                        <!-- Fase IV -->
+                        <tr><td colspan="4" style="background: var(--light-grey); font-weight: bold; color: var(--primary-blue);">Fase IV — Entrega, preparación de la visita y sostenimiento (Jun – Nov 2027)</td></tr>
+                        <tr><td>1 sem. jun. 2027</td><td>Entrega del informe de autoevaluación a la JAN, conforme a la ventana establecida.</td><td>Dirección</td><td>Acuse de recibo o constancia de entrega</td></tr>
+                        <tr><td>jun.–jul. 2027</td><td>Preparación para la visita: simulación de entrevistas con profesores, estudiantes y personal de apoyo; verificación de evidencias accesibles; actualización de trazas en plataformas y laboratorios.</td><td>Todas las comisiones</td><td>Guion de entrevistas y listas de verificación</td></tr>
+                        <tr><td>ago. 2027</td><td>Simulacro general de evaluación externa, si la JAN confirma condiciones.</td><td>Grupo de Dirección y profesores externos al proceso</td><td>Informe de simulacro y ajustes</td></tr>
+                        <tr><td>sept. 2027</td><td>Cierre de la preparación intensiva: evidencias organizadas por dimensión, responsables localizables y bases de datos actualizadas.</td><td>Coordinación ejecutiva</td><td>Checklist final de disponibilidad</td></tr>
+                        <tr><td>oct. 2027</td><td>Fase de sostenimiento: actualización de datos sensibles, revisión de locales y confirmación de disponibilidad de actores clave.</td><td>Comisiones y Control interno</td><td>Reporte de sostenibilidad</td></tr>
+                        <tr><td>nov. 2027</td><td><strong>Realización del proceso de evaluación externa SEA-CU.</strong> Estado de alerta y acompañamiento a la comisión evaluadora.</td><td>Dirección, comisiones y claustro</td><td>Proceso realizado y evidencias a disposición</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pestaña: Riesgos -->
+        <div id="riesgos" class="tab-content">
+            <div class="card" style="border-top-color: #dc3545;">
+                <h3>Riesgos Previsibles y Medidas de Contención</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Evidencias declarativas sin respaldo:</strong> El índice maestro y la auditoría de marzo deben rechazar toda afirmación sin evidencia fechada y localizable.</li>
+                    <li><strong>Brechas de infraestructura difíciles de cerrar:</strong> La Comisión 4 debe distinguir con honestidad entre lo que la carrera gestiona y lo que depende de decisiones superiores; el plan de mejora debe ser realista.</li>
+                    <li><strong>Datos inconsistentes entre dimensiones:</strong> Debe existir una fuente única de datos para variables sensibles —claustro, estudiantes y publicaciones— bajo control de la Comisión de Síntesis y del Grupo de Control.</li>
+                    <li><strong>Fatiga del claustro:</strong> Comunicar que el objetivo es producir un diagnóstico útil para la mejora real de la carrera, no solo cumplir con la acreditación.</li>
+                    <li><strong>Cambios normativos de la JAN:</strong> Mantener contacto sistemático con el Metodólogo de Calidad y revisar la convocatoria antes de cada fase, especialmente antes de junio y noviembre de 2027.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Página creada por el Departamento de Construcciones - Universidad de Matanzas</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">Ingeniería para el Futuro</p>
+    </footer>
+
+    <script>
+        // --- Lógica de Pestañas ---
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            evt.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            updateAllProgress();
+        }
+
+        // --- Lógica de Añadir Tareas ---
+        function handleEnter(e, comm) {
+            if (e.key === 'Enter') {
+                addTask(comm);
+            }
+        }
+
+        function addTask(comm) {
+            const input = document.getElementById(`input-${comm}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const id = `${comm}_custom_${Date.now()}`;
+            const ul = document.getElementById(`list-${comm}`);
+            
+            const li = document.createElement('li');
+            li.className = 'task-check';
+            li.id = `container_${id}`;
+            
+            // Usamos textContent para el label para evitar inyección de HTML
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'task custom-task';
+            checkbox.dataset.commission = comm;
+            checkbox.id = id;
+            checkbox.addEventListener('change', () => {
+                saveData();
+                updateAllProgress();
+            });
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.textContent = text;
+
+            const btn = document.createElement('button');
+            btn.className = 'delete-btn';
+            btn.innerHTML = '&times;';
+            btn.title = 'Eliminar tarea';
+            btn.onclick = () => deleteTask(id, li);
+
+            li.appendChild(checkbox);
+            li.appendChild(label);
+            li.appendChild(btn);
+            
+            ul.appendChild(li);
+            input.value = '';
+            
+            saveData();
+            updateAllProgress();
+        }
+
+        function deleteTask(id, element) {
+            if (confirm('¿Está seguro de eliminar esta tarea?')) {
+                element.remove();
+                saveData();
+                updateAllProgress();
+            }
+        }
+
+        // --- Lógica de Guardado y Progreso ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateAllProgress();
+        });
+
+        // Escuchar cambios en los textos editables
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('blur', saveData);
+        });
+
+        // Escuchar cambios en los checkboxes iniciales
+        document.querySelectorAll('.task').forEach(checkbox => {
+            if (!checkbox.classList.contains('custom-task')) {
+                checkbox.addEventListener('change', () => {
+                    saveData();
+                    updateAllProgress();
+                });
+            }
+        });
+
+        function saveData() {
+            const data = {
+                texts: {},
+                tasks: {},
+                customTasks: []
+            };
+
+            // Guardar textos
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                data.texts[el.getAttribute('data-id')] = el.innerText;
+            });
+
+            // Guardar estado de tareas iniciales
+            document.querySelectorAll('.task').forEach(checkbox => {
+                if (!checkbox.classList.contains('custom-task')) {
+                    data.tasks[checkbox.id] = checkbox.checked;
+                }
+            });
+
+            // Guardar tareas personalizadas (creadas por el usuario)
+            document.querySelectorAll('.custom-task').forEach(checkbox => {
+                const label = checkbox.nextElementSibling;
+                data.customTasks.push({
+                    id: checkbox.id,
+                    commission: checkbox.dataset.commission,
+                    text: label.innerText,
+                    checked: checkbox.checked
+                });
+            });
+
+            localStorage.setItem('seaCuData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('seaCuData');
+            if (!savedData) return;
+
+            const data = JSON.parse(savedData);
+
+            // Cargar textos
+            if (data.texts) {
+                for (const [key, value] of Object.entries(data.texts)) {
+                    const el = document.querySelector(`[data-id="${key}"]`);
+                    if (el) el.innerText = value;
+                }
+            }
+
+            // Cargar checkboxes iniciales
+            if (data.tasks) {
+                for (const [key, value] of Object.entries(data.tasks)) {
+                    const el = document.getElementById(key);
+                    if (el) el.checked = value;
+                }
+            }
+
+            // Cargar tareas personalizadas
+            if (data.customTasks) {
+                data.customTasks.forEach(t => {
+                    const ul = document.getElementById(`list-${t.commission}`);
+                    if (!ul) return;
+
+                    const li = document.createElement('li');
+                    li.className = 'task-check';
+                    li.id = `container_${t.id}`;
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'task custom-task';
+                    checkbox.dataset.commission = t.commission;
+                    checkbox.id = t.id;
+                    checkbox.checked = t.checked;
+                    checkbox.addEventListener('change', () => {
+                        saveData();
+                        updateAllProgress();
+                    });
+
+                    const label = document.createElement('label');
+                    label.htmlFor = t.id;
+                    label.textContent = t.text;
+
+                    const btn = document.createElement('button');
+                    btn.className = 'delete-btn';
+                    btn.innerHTML = '&times;';
+                    btn.title = 'Eliminar tarea';
+                    btn.onclick = () => deleteTask(t.id, li);
+
+                    li.appendChild(checkbox);
+                    li.appendChild(label);
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                });
+            }
+        }
+
+        function updateAllProgress() {
+            // 1. Actualizar barra de progreso general
+            const totalTasks = document.querySelectorAll('.task').length;
+            const completedTasks = document.querySelectorAll('.task:checked').length;
+            const globalPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+            
+            document.getElementById('global-progress-fill').style.width = globalPercentage + '%';
+            document.getElementById('global-progress-fill').innerText = globalPercentage + '%';
+            document.getElementById('global-progress-text').innerText = `${completedTasks} de ${totalTasks} tareas totales`;
+
+            // 2. Actualizar barras de progreso por comisión
+            const commissions = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+            
+            commissions.forEach(comm => {
+                const commTasks = document.querySelectorAll(`.task[data-commission="${comm}"]`);
+                const commCompleted = document.querySelectorAll(`.task[data-commission="${comm}"]:checked`);
+                
+                const total = commTasks.length;
+                const completed = commCompleted.length;
+                const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+                
+                const fillEl = document.getElementById(`${comm}-progress-fill`);
+                const textEl = document.getElementById(`${comm}-progress-text`);
+                
+                if (fillEl && textEl) {
+                    fillEl.style.width = percentage + '%';
+                    fillEl.innerText = percentage + '%';
+                    textEl.innerText = `${completed}/${total}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
